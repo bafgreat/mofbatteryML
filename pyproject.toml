@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "mofbatteryml"
+version = "0.1.0"
+description = "A python package to predict MOFs with the potentials for battery application"
+authors = ["Dinga Wonanke"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^2.2.1"
+numpy = "^1.26.4"
+matplotlib = "^3.8.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
