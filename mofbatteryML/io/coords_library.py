@@ -5,7 +5,25 @@ from  ase.io import read
 from ase import Atoms
 from mofbatteryML.io import filetyper
 
+def read_and_return_ase_atoms(filename):
+    """
+    Function to read the ase atoms
+    parameter
+    ----------
+    filename: string
+    """
+    ase_atoms = read(filename)
+    return ase_atoms
 
+def write_ase_atoms(ase_atoms, filename):
+    """
+    Function to write the ase atoms
+    parameter
+    ----------
+    ase_atoms: ase.Atoms object
+    filename: string
+    """
+    ase_atoms.write(filename)
 
 def ase_coordinate(filename):
     "Read coordinate using ase"
@@ -225,7 +243,7 @@ def xtb_input(filename):
     """
     elements, positions, cell = collect_coords(filename)
     xtb_coords = []
-    xtb_coords.append('> cat coord \n')
+    # xtb_coords.append('> cat coord \n')
     xtb_coords.append('$coord angs\n')
     for labels,row in zip(elements, positions):
         tmp_coord =  [str(atom)+ ' ' for atom in row] + [' '] + [labels]
@@ -236,30 +254,31 @@ def xtb_input(filename):
         for lattice in cell:
             lat_vector = '\t'.join(lattice) + '\n'
             xtb_coords.append(lat_vector)
-
-        xtb_coords.append('$end')
+    xtb_coords.append('$end')
+    # xtb_coords.append('> xtb coord\n')
     return xtb_coords
 
 def ase_to_xtb(ase_atoms):
     """
     Create an xtb input from an ase atom
     """
-
-    ase_cell = ase_atoms.get_cell(complete=True)
+    check_pbc = ase_atoms.get_pbc()
+    ase_cell = []
+    xtb_coords = []
+    if any(check_pbc):
+        ase_cell = ase_atoms.get_cell(complete=True)
     elements = ase_atoms.get_chemical_symbols()
     positions = ase_atoms.get_positions()
-    xtb_coords = []
-    xtb_coords.append('> cat coord \n')
+    # xtb_coords.append('> cat coord \n')
     xtb_coords.append('$coord angs\n')
     for labels,row in zip(elements, positions):
         tmp_coord =  [str(atom)+ ' ' for atom in row] + [' '] + [labels]
         xtb_coords.append('\t'.join(tmp_coord) +'\n')
     if len(ase_cell) > 0:
-        xtb_coords.append('$periodic ' +str(len(ase_cell)) +'\n')
-        xtb_coords.append('$lattice angs \n')
+        xtb_coords.append('$periodic cell vectors \n')
+        # xtb_coords.append('$lattice angs \n')
         for lattice in ase_cell :
-            lat_vector = '\t'.join(lattice) + '\n'
-            xtb_coords.append(lat_vector)
-
-        xtb_coords.append('$end')
+            tmp_lattice =  [str(lat)+ ' ' for lat in lattice] + [' ']
+            xtb_coords.append('\t'.join( tmp_lattice) +'\n')
+    xtb_coords.append('$end')
     return xtb_coords

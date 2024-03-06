@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mofbatteryml"
+name = "mofbatteryML"
 version = "0.1.0"
 description = "A python package to predict MOFs with the potentials for battery application"
 authors = ["Dinga Wonanke"]
@@ -11,6 +11,9 @@ pandas = "^2.2.1"
 numpy = "^1.26.4"
 matplotlib = "^3.8.3"
 
+[tool.poetry.scripts]
+dock_folder ="mofbatteryML.cli.create_complexes_from_folder:main"
+dock_structure ="mofbatteryML.cli.create_complexes_from_file:main"
 
 [build-system]
 requires = ["poetry-core"]

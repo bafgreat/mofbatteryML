@@ -50,10 +50,17 @@ def json_to_aseatom(data, filename):
     return
 
 
-def append_json_atom(data,  encoder, filename):
+def append_json_atom(data, filename):
     '''
     append a data containing an ase atom object
     '''
+    encoder = AtomsEncoder
+    if not os.path.exists(filename):
+        with open(filename, 'w', encoding='utf-8') as f_obj:
+            f_obj.write('{}')
+    elif os.path.getsize(filename) == 0:
+        with open(filename, 'w', encoding='utf-8') as f_obj:
+            f_obj.write('{}')
     with open(filename, 'r+', encoding='utf-8') as f_obj:
         # First we load existing data into a dict.
         file_data = json.load(f_obj)
@@ -63,7 +70,8 @@ def append_json_atom(data,  encoder, filename):
         f_obj.seek(0)
         # convert back to json.
 
-        json.dump(data, f_obj, indent=4, sort_keys=False, cls=encoder)
+        json.dump(data, f_obj, indent=4, sort_keys=True, cls=encoder)
+
 
 def numpy_to_json(ndarray, file_name):
     '''
