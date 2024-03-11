@@ -1,8 +1,7 @@
 import os
-import glob
-import shutil
 from mofbatteryML.io import coords_library
 from mofbatteryML.io import filetyper
+
 
 def compute_xtb_energy(ase_atoms):
     """
@@ -19,12 +18,13 @@ def compute_xtb_energy(ase_atoms):
     tmp_in = 'tmp_energy.gen'
     tmp_out = 'tmp_energy.out'
     coords_library.write_ase_atoms(ase_atoms, tmp_in)
-    os.system(f'xtb --gfn 2 --tblite --spinpol {tmp_in} > {tmp_out}')
+    os.system(f'xtb --sp --gfn 2 --tblite --spinpol {tmp_in} > {tmp_out}')
     energy = read_xtb_energy(tmp_out)
     os.chdir(base_dir)
-    if os.path.exists(result_folder):
-        shutil.rmtree(result_folder)
+    # if os.path.exists(result_folder):
+    #     shutil.rmtree(result_folder)
     return energy
+
 
 def read_xtb_energy(filename):
     """
@@ -44,7 +44,14 @@ def read_xtb_energy(filename):
             energy['homo_lumo_ev'] = float(data[3])
     return energy
 
+
 def compute_energy_of_atom(folder_of_atoms, output_folder):
+    """
+    Function to compute the xtb energy
+    parameter
+    ----------
+    ase_atoms: ase.Atoms object
+    """
     all_energy = {}
     json_filename = f'{output_folder}/energy_of_atoms.json'
     for filename in folder_of_atoms:
@@ -52,7 +59,7 @@ def compute_energy_of_atom(folder_of_atoms, output_folder):
         ase_atoms = coords_library.read_and_return_ase_atoms(filename)
         energy = compute_xtb_energy(ase_atoms)
         all_energy[basename] = energy
-        # filetyper.append_json(all_energy, json_filename)
+        filetyper.append_json(all_energy, json_filename)
 
 
 # def compute_xtb
