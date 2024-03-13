@@ -9,22 +9,23 @@ __credits__ = 'Dr. Matthew Addicoat'
 # The original paper can be found in this paper 10.1002/jcc.21026                                                 #
 ###################################################################################################################
 
-import os
+# import os
 import operator
 import random
-import glob
-import numpy as np
-from ase.io import read, write
 from math import pi
-from operator import attrgetter
 from collections import namedtuple
+# import glob
+import numpy as np
+# from ase.io import read, write
+# from operator import attrgetter
 from ase import geometry
 from ase.data import *
 from ase.neighborlist import *
 from ase.atoms import Atoms
 from ase.atom import Atom
 from mofbatteryML.energy import compute_sp
-from mofbatteryML.io import filetyper
+# from mofbatteryML.io import filetyper
+
 
 def check_coords(mol0, mol1):
     """
@@ -53,11 +54,11 @@ def check_coords(mol0, mol1):
 
 
 def bond_radii():
-    bondRadii = {symbol: [r, r-0.1, r-0.2]
+    all_bond_radii = {symbol: [r, r-0.1, r-0.2]
                  for symbol, r in zip(chemical_symbols, covalent_radii)}
     mmbond = {'Cr': 4, 'Mo': 4, 'V': 3, 'Rh': 1, 'Ru': 2, 'W': 4,
               'Os': 3, 'Re': 4, 'Pt': 1, 'Tc': 4, 'Ir': 1, 'Pd': 1}
-    return bondRadii, mmbond
+    return all_bond_radii, mmbond
 
 
 def check_coords2(mol0, mol1):
@@ -65,7 +66,7 @@ def check_coords2(mol0, mol1):
     Check distances between old and new molecules (Atoms objects)
     We'll add the molecules together such that we can use the mic facility.
     mol0 is the 'current good' mol and carries the pbc information, if any."""
-    bondRadii, _ = bond_radii()
+    all_bond_radii, _ = bond_radii()
     keep_coords = False
 
     if mol0.get_pbc().any():
@@ -80,8 +81,8 @@ def check_coords2(mol0, mol1):
 
     shortest_distance = np.min(distances[1])
     i1, i2 = np.unravel_index(distances[1].argmin(), distances[1].shape)
-    vdw_1 = bondRadii[mol0[i1].symbol][0]
-    vdw_2 = bondRadii[mol1[i2].symbol][0]
+    vdw_1 = all_bond_radii[mol0[i1].symbol][0]
+    vdw_2 = all_bond_radii[mol1[i2].symbol][0]
     bond_cut_off = vdw_2 + vdw_1 + 1
     if shortest_distance > bond_cut_off:
         keep_coords = True
@@ -89,12 +90,12 @@ def check_coords2(mol0, mol1):
 
 
 def molecule_diameter(new_atom):
-    bondRadii, _ = bond_radii()
+    all_bond_radii, _ = bond_radii()
     dist_matrix = new_atom.get_all_distances(mic=True)
     final_matrix = np.triu(dist_matrix)
     i1, i2 = np.unravel_index(final_matrix.argmax(), final_matrix.shape)
-    vdw_1 = bondRadii[new_atom[i1].symbol][0]
-    vdw_2 = bondRadii[new_atom[i2].symbol][0]
+    vdw_1 = all_bond_radii[new_atom[i1].symbol][0]
+    vdw_2 = all_bond_radii[new_atom[i2].symbol][0]
     maxdim = final_matrix[i1, i2]+vdw_1 + vdw_2
     return maxdim
 
@@ -117,7 +118,6 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
     k3_params = {'num_geoms': number_of_complexes, 'ncpus': 1, 'mem': '2GB', 'wall': 1,
                  'charge': 0, 'multiplicity': 1, 'program': 'dftb', 'order': True}
 
-
     energy_dict['monomer'] = compute_sp.compute_xtb_energy(monomer)
     energy_dict['host_system'] = compute_sp.compute_xtb_energy(host_system)
 
@@ -137,7 +137,7 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
         k3_params["pbc"] = system_pbc
         k3_params["radius"] = molecule_diameter(framework)/2.0
 
-    total_objects = sum([v.number for v in system_def.values()])
+    # total_objects = sum([v.number for v in system_def.values()])
 
     frag_list = []
     tmp_sysdef = {}
@@ -155,15 +155,19 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
                     frag_list.append(k)
                     tmp_sysdef[k] -= 1
     else:
-        for k, v in sorted(tmp_sysdef.iteritems(), key=operator.itemgetter(1)):
-            for tmp in range(v):
-                frag_list.append(k)
+        # for k, v in sorted(tmp_sysdef.iteritems(), key=operator.itemgetter(1)):
+        #     for _ in range(v):
+        #         frag_list.append(k)
+        sorted_items = sorted(tmp_sysdef.items(), key=lambda x: x[1])
+        for k, v in sorted_items:
+            # Append the key to frag_list 'v' times
+            frag_list.extend([k] * v)
 
     for ci in range(k3_params["num_geoms"]):
-        current = ci
-        this_file = "%04d" % current
+        # current = ci
+        # this_file = "%04d" % current
 
-        if "pbc" in k3_params.keys():
+        if "pbc" in k3_params:
             new_mol = Atoms(pbc=k3_params["pbc"], cell=k3_params["cell"])
             dummy_mol = Atoms(pbc=k3_params["pbc"], cell=k3_params["cell"])
         else:
@@ -173,7 +177,7 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
         if k3_params["program"] == 'gaussian':
             new_mol.info["mem"] = k3_params["mem"]
             new_mol.info["ncpus"] = k3_params["ncpus"]
-            new_mol.info["filebase"] = filebase
+            # new_mol.info["filebase"] = filebase
             new_mol.info["charge"] = k3_params["charge"]
             new_mol.info["multiplicity"] = k3_params["multiplicity"]
 
@@ -222,14 +226,16 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
                     elif attempts == 5:
                         this_origin = random.choice(dummy_mol).position
                         attempts = 0
-        complex = 'complex_' + str(ci)
+        host_guest_complex = 'complex_' + str(ci)
         new_mol_energy = compute_sp.compute_xtb_energy(new_mol)
-        energy_dict[complex] = new_mol_energy
-        complex_molecules[complex] = new_mol
-
-        free_energy = energy_dict[complex]['energy_kcal_mol'] - (
-            energy_dict['monomer']['energy_kcal_mol'] + energy_dict['host_system']['energy_kcal_mol'])
-        energy_dict[complex]['free_energy_kcal_mol'] = free_energy
+        energy_dict[host_guest_complex] = new_mol_energy
+        complex_molecules[host_guest_complex] = new_mol
+        try:
+            free_energy = energy_dict[host_guest_complex]['energy_kcal_mol'] - (
+                energy_dict['monomer']['energy_kcal_mol'] + energy_dict['host_system']['energy_kcal_mol'])
+            energy_dict[complex]['free_energy_kcal_mol'] = free_energy
+        except Exception as e:
+            print(e)
         print(energy_dict)
 
     return energy_dict, complex_molecules

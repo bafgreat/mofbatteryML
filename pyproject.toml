@@ -12,8 +12,9 @@ numpy = "^1.26.4"
 matplotlib = "^3.8.3"
 
 [tool.poetry.scripts]
-dock_folder ="mofbatteryML.cli.create_complexes_from_folder:main"
-dock_structure ="mofbatteryML.cli.create_complexes_from_file:main"
+dock_folder ="mofbatteryML.setter.create_complexes_from_folder:main"
+dock_structure ="mofbatteryML.setter.create_complexes_from_folder:main2"
+dock_from_ase="mofbatteryML.setter.create_complexes_from_ase_atoms:main"
 
 [build-system]
 requires = ["poetry-core"]
