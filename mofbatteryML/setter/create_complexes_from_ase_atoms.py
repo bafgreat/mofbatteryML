@@ -52,7 +52,7 @@ def extract_energy_molecules_from_file(list_of_hosts, list_of_monomers, number_o
                 filetyper.append_json(new_energy, json_energy_filename)
                 filetyper.append_json_atom(new_mol, json_mol_filename)
             else:
-                print (f'{base_name} has already been computed')
+                print(f'{base_name} has already been computed')
     return
 
 
