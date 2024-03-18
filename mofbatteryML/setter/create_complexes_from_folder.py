@@ -31,7 +31,7 @@ def extract_energy_molecules_from_folder(host_folder, monomer_folder, number_of_
         for monomer_file in monomer_folder:
             monomer = read(monomer_file)
             host_system = read(host_system_file)
-            host_base_name = os.path.basename(host_system_file).split('.')[0]
+            host_base_name = os.path.basename(host_system_file).split('.')[0].split('_')[0]
             monomer_base_name = os.path.basename(monomer_file).split('.')[0]
             base_name = host_base_name + '_' + monomer_base_name
             if base_name not in seen:

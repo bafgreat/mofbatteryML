@@ -226,16 +226,17 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
                     elif attempts == 5:
                         this_origin = random.choice(dummy_mol).position
                         attempts = 0
-        host_guest_complex = 'complex_' + str(ci)
-        new_mol_energy = compute_sp.compute_xtb_energy(new_mol)
-        energy_dict[host_guest_complex] = new_mol_energy
-        complex_molecules[host_guest_complex] = new_mol
-        try:
-            free_energy = energy_dict[host_guest_complex]['energy_kcal_mol'] - (
-                energy_dict['monomer']['energy_kcal_mol'] + energy_dict['host_system']['energy_kcal_mol'])
-            energy_dict[complex]['free_energy_kcal_mol'] = free_energy
-        except Exception as e:
-            print(e)
-        print(energy_dict)
+        if len(new_mol) > 0:
+            host_guest_complex = 'complex_' + str(ci)
+            new_mol_energy = compute_sp.compute_xtb_energy(new_mol)
+            energy_dict[host_guest_complex] = new_mol_energy
+            complex_molecules[host_guest_complex] = new_mol
+            try:
+                free_energy = energy_dict[host_guest_complex]['energy_kcal_mol'] - (
+                    number_of_monomers*energy_dict['monomer']['energy_kcal_mol'] + number_of_host*energy_dict['host_system']['energy_kcal_mol'])
+                energy_dict[host_guest_complex]['free_energy_kcal_mol'] = free_energy
+            except Exception as e:
+                print(e)
+            print(energy_dict)
 
     return energy_dict, complex_molecules

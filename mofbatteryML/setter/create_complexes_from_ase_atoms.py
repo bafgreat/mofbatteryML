@@ -17,14 +17,18 @@ def extract_energy_molecules_from_file(list_of_hosts, list_of_monomers, number_o
     seen = []
     if not os.path.exists(results_folder):
         os.makedirs(results_folder)
-        json_mol_filename = os.path.join(results_folder, 'complexes.json')
-        json_energy_filename = os.path.join(results_folder, 'energy.json')
-    else:
+
+    json_mol_filename = os.path.join(results_folder, 'complexes.json')
+    json_energy_filename = os.path.join(results_folder, 'energy.json')
+    if os.path.exists(json_mol_filename):
         json_mol_filename = filetyper.load_data(
             os.path.join(results_folder, 'complexes.json'))
+        seen = list(json_energy_filename.keys())
+
+    if os.path.exists(json_energy_filename):
         json_energy_filename = filetyper.load_data(
             os.path.join(results_folder, 'energy.json'))
-        seen = list(json_energy_filename.keys())
+
 
     new_mol = {}
     new_energy = {}

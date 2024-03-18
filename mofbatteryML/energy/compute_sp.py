@@ -1,4 +1,5 @@
 import os
+import shutil
 from mofbatteryML.io import coords_library
 from mofbatteryML.io import filetyper
 
@@ -21,8 +22,8 @@ def compute_xtb_energy(ase_atoms):
     os.system(f'xtb --sp --gfn 2 --tblite --spinpol {tmp_in} > {tmp_out}')
     energy = read_xtb_energy(tmp_out)
     os.chdir(base_dir)
-    # if os.path.exists(result_folder):
-    #     shutil.rmtree(result_folder)
+    if os.path.exists(result_folder):
+        shutil.rmtree(result_folder)
     return energy
 
 
@@ -68,4 +69,3 @@ def compute_energy_of_atom(folder_of_atoms, output_folder):
 # output_folder = '../data/json_files'
 # compute_energy_of_atom(folder_of_atoms, output_folder)
 # compute_xtb_energy("../data/metal_atoms/Al_atom.xyz")
-
