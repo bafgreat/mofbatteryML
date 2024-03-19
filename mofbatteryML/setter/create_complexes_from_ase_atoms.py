@@ -2,8 +2,8 @@ import os
 import glob
 from ase.io import read
 import argparse
-from mofbatteryML.io import filetyper
-from mofbatteryML.energy import docker
+from mofbatteryml.io import filetyper
+from mofbatteryml.energy import docker
 
 
 def extract_energy_molecules_from_file(list_of_hosts, list_of_monomers, number_of_host, number_of_monomers, number_of_complexes, selector, results_folder):

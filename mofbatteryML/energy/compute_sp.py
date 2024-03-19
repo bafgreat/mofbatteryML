@@ -1,7 +1,7 @@
 import os
 import shutil
-from mofbatteryML.io import coords_library
-from mofbatteryML.io import filetyper
+from mofbatteryml.io import coords_library
+from mofbatteryml.io import filetyper
 
 
 def compute_xtb_energy(ase_atoms):

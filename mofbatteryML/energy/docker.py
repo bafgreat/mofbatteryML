@@ -23,8 +23,8 @@ from ase.data import *
 from ase.neighborlist import *
 from ase.atoms import Atoms
 from ase.atom import Atom
-from mofbatteryML.energy import compute_sp
-# from mofbatteryML.io import filetyper
+from mofbatteryml.energy import compute_sp
+# from mofbatteryml.io import filetyper
 
 
 def check_coords(mol0, mol1):

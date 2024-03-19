@@ -1,4 +1,4 @@
-name: mofbatteryML
+name: mofbatteryml
 channels:
   - conda-forge
   - defaults

@@ -3,7 +3,7 @@ import numpy as np
 import re
 from  ase.io import read
 from ase import Atoms
-from mofbatteryML.io import filetyper
+from mofbatteryml.io import filetyper
 
 def read_and_return_ase_atoms(filename):
     """
