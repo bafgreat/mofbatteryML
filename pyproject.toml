@@ -10,6 +10,7 @@ python = "^3.9"
 pandas = "^2.2.1"
 numpy = "^1.26.4"
 matplotlib = "^3.8.3"
+requests = "^2.31.0"
 
 [tool.poetry.scripts]
 dock_folder ="mofbatteryML.setter.create_complexes_from_folder:main"
