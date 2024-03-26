@@ -2,6 +2,7 @@ import os
 import shutil
 from mofbatteryml.io import coords_library
 from mofbatteryml.io import filetyper
+import random
 
 
 def compute_xtb_energy(ase_atoms):
@@ -12,7 +13,8 @@ def compute_xtb_energy(ase_atoms):
     ase_atoms: ase.Atoms object
     """
     base_dir = os.getcwd()
-    result_folder = 'tmp_dir'
+    random_number = random.uniform(0, 10**8)
+    result_folder = 'tmp_dir_'+str(random_number)
     if not os.path.exists(result_folder):
         os.makedirs(result_folder)
     os.chdir(result_folder)
