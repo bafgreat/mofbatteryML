@@ -1,8 +1,10 @@
 import os
 import shutil
+import random
+import subprocess
+import tempfile
 from mofbatteryml.io import coords_library
 from mofbatteryml.io import filetyper
-import random
 
 
 def compute_xtb_energy(ase_atoms):
@@ -13,20 +15,27 @@ def compute_xtb_energy(ase_atoms):
     ase_atoms: ase.Atoms object
     """
     base_dir = os.getcwd()
-    random_number = random.uniform(0, 10**8)
-    result_folder = 'tmp_dir_'+str(random_number)
-    if not os.path.exists(result_folder):
-        os.makedirs(result_folder)
-    os.chdir(result_folder)
-    tmp_in = 'tmp_energy.gen'
-    tmp_out = 'tmp_energy.out'
-    coords_library.write_ase_atoms(ase_atoms, tmp_in)
-    os.system(f'xtb --sp --gfn 2 --tblite --spinpol {tmp_in} > {tmp_out}')
-    energy = read_xtb_energy(tmp_out)
+    with tempfile.TemporaryDirectory() as result_folder:
+        os.chdir(result_folder)
+
+        tmp_in = 'tmp_energy.gen'
+        tmp_out = 'tmp_energy.out'
+
+        with open(tmp_in, 'w') as f:
+            coords_library.write_ase_atoms(ase_atoms, f)
+
+        command = f'xtb --sp --gfn 2 --tblite --spinpol {tmp_in}'
+        try:
+            completed_process = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
+            energy = read_xtb_energy(tmp_out)
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing xtb: {e.stderr}")
+            return None
+
     os.chdir(base_dir)
-    if os.path.exists(result_folder):
-        shutil.rmtree(result_folder)
+
     return energy
+
 
 
 def read_xtb_energy(filename):
