@@ -194,13 +194,13 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
         for this_frag in frag_list:
             keep_coords = False
             attempts = 0
+            max_attempts = 10
             if system_def[this_frag].frag_type == "L" or system_def[this_frag].frag_type == "P":
                 new_mol += system_master[this_frag]
                 this_com = system_master[this_frag].get_center_of_mass()
                 dummy_mol += Atom('X', position=this_com)
             else:
                 this_origin = random.choice(dummy_mol).position
-                attempts = 0
                 while not keep_coords:
                     translation = np.random.random_sample(
                         3) * k3_params["radius"] * 2 - k3_params["radius"]
@@ -223,9 +223,12 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
                         tmp_com = tmp_mol.get_center_of_mass()
                         dummy_mol += Atom('X', position=tmp_com)
                         break
-                    elif attempts == 5:
-                        this_origin = random.choice(dummy_mol).position
-                        attempts = 0
+                    elif attempts == max_attempts:
+                        print("Failed to add molecule after {} attempts. Moving to the next complex.".format(max_attempts))
+                        new_mol = Atoms() 
+                        break
+                        # this_origin = random.choice(dummy_mol).position
+                        # attempts = 0
         if len(new_mol) > 0:
             host_guest_complex = 'complex_' + str(ci)
             new_mol_energy = compute_sp.compute_xtb_energy(new_mol)

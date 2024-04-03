@@ -2,3 +2,5 @@ poetry.lock
 __pycache__/
 mofbatteryml/data
 mofbatteryml/code
+mofbatteryml/codes/compute_complexes.py
+mofbatteryml/codes/create_batches.py
