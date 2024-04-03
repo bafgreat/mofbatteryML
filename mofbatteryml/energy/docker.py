@@ -194,7 +194,7 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
         for this_frag in frag_list:
             keep_coords = False
             attempts = 0
-            max_attempts = 1000
+            max_attempts = 3000
             if system_def[this_frag].frag_type == "L" or system_def[this_frag].frag_type == "P":
                 new_mol += system_master[this_frag]
                 this_com = system_master[this_frag].get_center_of_mass()
