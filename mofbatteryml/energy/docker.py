@@ -217,15 +217,17 @@ def Dock(host_system,  monomer, number_of_host=1, number_of_monomers=1, number_o
                     tmp_com = tmp_mol.get_center_of_mass()
                     tmp_mol.translate(translation - tmp_com)
                     attempts += 1
+                    print ("attempts: ", attempts)
                     keep_coords = check_coords2(new_mol, tmp_mol)
                     if keep_coords:
                         new_mol += tmp_mol
                         tmp_com = tmp_mol.get_center_of_mass()
                         dummy_mol += Atom('X', position=tmp_com)
+                        print ("complex build successfully after {} attempts.".format(attempts))
                         break
                     elif attempts == max_attempts:
                         print("Failed to add molecule after {} attempts. Moving to the next complex.".format(max_attempts))
-                        new_mol = Atoms() 
+                        new_mol = Atoms()
                         break
                         # this_origin = random.choice(dummy_mol).position
                         # attempts = 0
